@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a2e1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Green Home 🌿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --green-deep: #1a2e1a;
+  --green-mid: #2d5a27;
+  --green-bright: #4a9e3f;
+  --green-light: #7cc96e;
+  --green-pale: #c8e6c4;
+  --green-mist: #edf7ec;
+  --earth: #8b6914;
+  --earth-light: #d4a843;
+  --cream: #faf8f2;
+  --white: #ffffff;
+  --text-dark: #1a2e1a;
+  --text-mid: #4a6741;
+  --text-light: #7a9877;
+  --shadow: rgba(26,46,26,0.15);
+  --radius: 18px;
+  --radius-sm: 10px;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'DM Sans',sans-serif; background:var(--green-mist); color:var(--text-dark); min-height:100vh; overflow-x:hidden; padding-bottom:80px; }
+
+/* HEADER */
+.header { background:linear-gradient(160deg,var(--green-deep) 0%,var(--green-mid) 100%); padding:50px 20px 24px; position:relative; overflow:hidden; }
+.header::before { content:''; position:absolute; top:-40px; right:-40px; width:200px; height:200px; border-radius:50%; background:rgba(74,158,63,0.15); }
+.header::after { content:'🌿'; position:absolute; top:12px; right:20px; font-size:48px; opacity:0.3; transform:rotate(-15deg); }
+.header h1 { font-family:'Playfair Display',serif; font-size:28px; color:var(--white); font-weight:700; }
+.header p { color:var(--green-pale); font-size:13px; margin-top:4px; font-weight:300; }
+.header-stats { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+.stat-pill { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.18); border-radius:20px; padding:6px 14px; color:var(--white); font-size:13px; font-weight:500; }
+.stat-pill span { color:var(--green-light); font-weight:700; }
+
+/* NAV */
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--white); display:flex; justify-content:space-around; align-items:center; padding:8px 0 20px; box-shadow:0 -4px 20px var(--shadow); z-index:100; border-top:1px solid rgba(0,0,0,0.06); }
+.nav-btn { display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 12px; border-radius:12px; color:var(--text-light); }
+.nav-btn.active { color:var(--green-bright); }
+.nav-btn .nav-icon { font-size:22px; }
+.nav-btn .nav-label { font-size:10px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+
+/* PAGES */
+.page { display:none; animation:fadeUp 0.3s ease; }
+.page.active { display:block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+.section-title { font-family:'Playfair Display',serif; font-size:20px; color:var(--text-dark); padding:20px 20px 12px; font-weight:700; }
+
+/* CARDS */
+.card { background:var(--white); border-radius:var(--radius); margin:0 16px 12px; padding:16px; box-shadow:0 2px 12px var(--shadow); }
+
+/* ZONES */
+.zones-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 16px 16px; }
+.zone-card { background:var(--white); border-radius:var(--radius); padding:16px; box-shadow:0 2px 12px var(--shadow); cursor:pointer; transition:transform 0.2s; position:relative; overflow:hidden; border-left:4px solid var(--green-bright); }
+.zone-card:active { transform:scale(0.97); }
+.zone-card .zone-emoji { font-size:32px; margin-bottom:8px; display:block; }
+.zone-card .zone-name { font-weight:600; font-size:14px; }
+.zone-card .zone-count { font-size:12px; color:var(--text-light); margin-top:2px; }
+.zone-card .zone-badge { position:absolute; top:10px; right:10px; background:var(--green-mist); color:var(--green-bright); border-radius:10px; padding:2px 8px; font-size:11px; font-weight:700; }
+
+/* PLANTS */
+.plant-list { padding:0 16px 16px; }
+.plant-item { background:var(--white); border-radius:var(--radius); padding:14px 16px; margin-bottom:10px; box-shadow:0 2px 12px var(--shadow); display:flex; align-items:center; gap:14px; cursor:pointer; transition:transform 0.15s; }
+.plant-item:active { transform:scale(0.98); }
+.plant-photo { width:54px; height:54px; border-radius:14px; background:var(--green-mist); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; overflow:hidden; }
+.plant-photo img { width:100%; height:100%; object-fit:cover; border-radius:14px; }
+.plant-info { flex:1; min-width:0; }
+.plant-name { font-weight:600; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.plant-zone { font-size:12px; color:var(--text-light); margin-top:2px; }
+.plant-watering { font-size:11px; padding:3px 8px; border-radius:8px; font-weight:600; flex-shrink:0; }
+.water-ok { background:var(--green-mist); color:var(--green-bright); }
+.water-soon { background:#fff8e1; color:#f59e0b; }
+.water-urgent { background:#fff0f0; color:#ef4444; }
+
+/* PLANNING */
+.planning-day { margin:0 16px 16px; }
+.planning-day-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-light); margin-bottom:8px; padding-left:4px; }
+.task-item { background:var(--white); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; box-shadow:0 1px 6px var(--shadow); }
+.task-check { width:26px; height:26px; border-radius:50%; border:2px solid var(--green-bright); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:all 0.2s; }
+.task-check.done { background:var(--green-bright); border-color:var(--green-bright); }
+.task-info { flex:1; }
+.task-title { font-size:14px; font-weight:500; }
+.task-plant { font-size:12px; color:var(--text-light); }
+.task-icon { font-size:20px; flex-shrink:0; }
+.task-source { font-size:10px; padding:2px 6px; border-radius:6px; font-weight:600; }
+.task-auto { background:#e8f5e9; color:#2e7d32; }
+.task-manual { background:#e3f2fd; color:#1565c0; }
+.task-seasonal { background:#fff3e0; color:#e65100; }
+
+/* JOURNAL */
+.journal-entry { background:var(--white); border-radius:var(--radius); margin:0 16px 12px; overflow:hidden; box-shadow:0 2px 12px var(--shadow); }
+.journal-photo { width:100%; height:160px; object-fit:cover; background:var(--green-mist); display:flex; align-items:center; justify-content:center; font-size:48px; }
+.journal-photo img { width:100%; height:100%; object-fit:cover; }
+.journal-content { padding:14px 16px; }
+.journal-date { font-size:11px; color:var(--text-light); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.journal-title { font-family:'Playfair Display',serif; font-size:17px; margin-top:4px; }
+.journal-text { font-size:13px; color:var(--text-mid); margin-top:6px; line-height:1.5; }
+.journal-plant { display:inline-flex; align-items:center; gap:4px; margin-top:8px; background:var(--green-mist); padding:3px 10px; border-radius:20px; font-size:12px; color:var(--green-mid); font-weight:500; }
+
+/* IA SECTION */
+.ia-section { padding:0 16px 16px; }
+.ia-card { background:linear-gradient(135deg,var(--green-deep) 0%,#1a3d28 100%); border-radius:var(--radius); padding:24px; color:var(--white); position:relative; overflow:hidden; margin-bottom:16px; }
+.ia-card::before { content:'🤖'; position:absolute; bottom:-10px; right:10px; font-size:80px; opacity:0.1; }
+.ia-card h3 { font-family:'Playfair Display',serif; font-size:20px; margin-bottom:8px; }
+.ia-card p { font-size:13px; color:var(--green-pale); line-height:1.5; }
+
+/* CONSEILS CARD */
+.conseil-card { background:var(--white); border-radius:var(--radius); padding:20px; margin-bottom:12px; box-shadow:0 2px 12px var(--shadow); border-left:4px solid var(--earth-light); }
+.conseil-plant { font-weight:700; font-size:15px; display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.conseil-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; font-size:13px; color:var(--text-mid); line-height:1.5; }
+.conseil-month-badge { display:inline-block; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:700; background:#fff3e0; color:#e65100; margin-right:4px; }
+.conseil-urgent { background:#fff0f0; border-left-color:#ef4444; }
+.conseil-urgent .conseil-plant { color:#ef4444; }
+
+/* BOUTON CLAUDE */
+.btn-claude { display:flex; align-items:center; justify-content:center; gap:10px; padding:14px 20px; border-radius:14px; border:none; background:linear-gradient(135deg,#7c3aed,#4f46e5); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; width:100%; box-shadow:0 4px 14px rgba(124,58,237,0.35); transition:transform 0.2s; margin-bottom:12px; }
+.btn-claude:active { transform:scale(0.97); }
+
+/* BTNS */
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:13px 24px; border-radius:14px; border:none; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:all 0.2s; width:100%; }
+.btn-primary { background:linear-gradient(135deg,var(--green-bright),var(--green-mid)); color:var(--white); box-shadow:0 4px 14px rgba(74,158,63,0.35); }
+.btn-primary:active { transform:scale(0.97); }
+.btn-secondary { background:var(--green-mist); color:var(--green-mid); border:1.5px solid var(--green-pale); }
+
+/* FAB */
+.fab { position:fixed; bottom:90px; right:20px; width:58px; height:58px; border-radius:50%; background:linear-gradient(135deg,var(--green-bright),var(--green-mid)); color:var(--white); font-size:26px; border:none; box-shadow:0 6px 20px rgba(74,158,63,0.45); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:99; transition:transform 0.2s; }
+.fab:active { transform:scale(0.93); }
+
+/* MODAL */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+.modal-overlay.open { opacity:1; pointer-events:all; }
+.modal { background:var(--white); border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-height:90vh; overflow-y:auto; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+.modal-overlay.open .modal { transform:translateY(0); }
+.modal-handle { width:40px; height:4px; background:#e0e0e0; border-radius:2px; margin:0 auto 20px; }
+.modal h2 { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:20px; }
+
+/* FORM */
+.form-group { margin-bottom:16px; }
+.form-label { display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--text-light); margin-bottom:6px; }
+.form-input,.form-select,.form-textarea { width:100%; padding:13px 16px; border-radius:12px; border:1.5px solid var(--green-pale); background:var(--white); font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text-dark); outline:none; transition:border-color 0.2s; }
+.form-input:focus,.form-select:focus,.form-textarea:focus { border-color:var(--green-bright); }
+.form-textarea { resize:vertical; min-height:90px; line-height:1.5; }
+
+/* PHOTO UPLOAD */
+.photo-upload { width:100%; height:140px; border-radius:14px; border:2px dashed var(--green-pale); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; background:var(--green-mist); transition:all 0.2s; overflow:hidden; position:relative; }
+.photo-upload input { display:none; }
+
+/* SEARCH */
+.search-bar { margin:12px 16px; padding:12px 16px; border-radius:14px; border:1.5px solid var(--green-pale); background:var(--white); font-family:'DM Sans',sans-serif; font-size:15px; width:calc(100% - 32px); outline:none; box-shadow:0 1px 6px var(--shadow); }
+
+/* TABS */
+.tabs { display:flex; gap:8px; padding:0 16px 12px; overflow-x:auto; scrollbar-width:none; }
+.tabs::-webkit-scrollbar { display:none; }
+.tab-btn { padding:7px 16px; border-radius:20px; border:1.5px solid var(--green-pale); background:var(--white); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; color:var(--text-light); cursor:pointer; white-space:nowrap; transition:all 0.2s; }
+.tab-btn.active { background:var(--green-bright); border-color:var(--green-bright); color:var(--white); }
+
+/* DETAIL */
+.detail-header { position:relative; height:220px; background:var(--green-mid); overflow:hidden; }
+.detail-header img { width:100%; height:100%; object-fit:cover; }
+.detail-header-emoji { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:80px; background:linear-gradient(160deg,var(--green-deep),var(--green-mid)); }
+.detail-back { position:absolute; top:50px; left:16px; background:rgba(0,0,0,0.35); border:none; color:white; font-size:22px; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(4px); }
+.detail-content { padding:20px; }
+.detail-name { font-family:'Playfair Display',serif; font-size:26px; }
+.detail-latin { font-size:14px; color:var(--text-light); font-style:italic; margin-top:2px; }
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0; }
+.detail-stat { background:var(--green-mist); border-radius:var(--radius-sm); padding:12px; text-align:center; }
+.detail-stat .ds-icon { font-size:22px; margin-bottom:4px; }
+.detail-stat .ds-label { font-size:11px; color:var(--text-light); text-transform:uppercase; letter-spacing:0.4px; font-weight:600; }
+.detail-stat .ds-value { font-size:14px; font-weight:600; margin-top:2px; }
+
+/* TYPE BADGES */
+.type-badge { display:inline-block; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:600; }
+.type-interieur { background:#e8f5e9; color:#2e7d32; }
+.type-exterieur { background:#e3f2fd; color:#1565c0; }
+.type-arbre { background:#fff3e0; color:#e65100; }
+.type-potager { background:#f3e5f5; color:#6a1b9a; }
+.type-petits-fruits { background:#fce4ec; color:#880e4f; }
+.type-semis { background:#e0f7fa; color:#006064; }
+
+/* LOADING */
+.loading-screen { position:fixed; inset:0; background:var(--green-deep); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; gap:20px; transition:opacity 0.5s; }
+.loading-screen.hidden { opacity:0; pointer-events:none; }
+.loading-title { font-family:'Playfair Display',serif; font-size:32px; color:var(--white); }
+.loading-sub { font-size:14px; color:var(--green-pale); }
+.loading-spinner { width:44px; height:44px; border:3px solid rgba(255,255,255,0.15); border-top-color:var(--green-light); border-radius:50%; animation:spin 0.8s linear infinite; }
+
+/* EMPTY */
+.empty-state { text-align:center; padding:50px 30px; color:var(--text-light); }
+.empty-state .empty-icon { font-size:52px; margin-bottom:16px; }
+.empty-state p { font-size:14px; line-height:1.6; }
+
+/* TOAST */
+.toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--green-deep); color:var(--white); padding:12px 24px; border-radius:20px; font-size:14px; font-weight:500; z-index:300; opacity:0; transition:all 0.3s; white-space:nowrap; box-shadow:0 4px 20px rgba(0,0,0,0.3); }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* CALENDRIER BADGE */
+.cal-month { display:inline-block; width:28px; height:28px; border-radius:50%; background:var(--earth-light); color:white; font-size:11px; font-weight:700; text-align:center; line-height:28px; margin:2px; }
+.cal-month.active-month { background:var(--green-bright); transform:scale(1.2); }
+
+/* NOTIFICATION BANNER */
+.notif-banner { margin:12px 16px; padding:14px 16px; border-radius:var(--radius); background:linear-gradient(135deg,#ff6b35,#f7c59f); color:white; font-size:14px; font-weight:500; display:flex; align-items:center; gap:10px; }
+.notif-banner .notif-icon { font-size:22px; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div style="font-size:56px">🌿</div>
+  <div class="loading-title">Green Home</div>
+  <div class="loading-sub">Chargement de ton jardin…</div>
+  <div class="loading-spinner"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="header" id="mainHeader">
+  <h1>Green Home 🌿</h1>
+  <p id="headerDate"></p>
+  <div class="header-stats">
+    <div class="stat-pill"><span id="totalPlants">0</span> plantes</div>
+    <div class="stat-pill"><span id="totalTasks">0</span> tâches aujourd'hui</div>
+    <div class="stat-pill"><span id="urgentWater">0</span> 💧 urgent</div>
+  </div>
+</div>
+
+<!-- PAGE CARTE -->
+<div class="page active" id="page-carte">
+  <div class="section-title">🗺️ Mes espaces</div>
+  <div class="zones-grid" id="zonesGrid"></div>
+  <div id="zonePlantsList" style="display:none">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 16px 8px">
+      <button onclick="closeZoneView()" style="background:var(--green-mist);border:none;padding:7px 14px;border-radius:10px;font-size:13px;font-weight:600;color:var(--green-mid);cursor:pointer">← Retour</button>
+      <div class="section-title" style="padding:0;margin:0" id="zoneViewTitle"></div>
+    </div>
+    <div class="plant-list" id="zonePlantsContainer"></div>
+  </div>
+</div>
+
+<!-- PAGE PLANTES -->
+<div class="page" id="page-plantes">
+  <div class="section-title">🌱 Toutes mes plantes</div>
+  <input type="search" class="search-bar" placeholder="🔍 Rechercher…" oninput="filterPlants(this.value)" id="searchInput">
+  <div class="tabs" id="filterTabs">
+    <button class="tab-btn active" onclick="filterByType('all',this)">Toutes</button>
+    <button class="tab-btn" onclick="filterByType('interieur',this)">🏠 Intérieur</button>
+    <button class="tab-btn" onclick="filterByType('exterieur',this)">🌳 Extérieur</button>
+    <button class="tab-btn" onclick="filterByType('arbre',this)">🌲 Arbres</button>
+    <button class="tab-btn" onclick="filterByType('potager',this)">🥕 Potager</button>
+    <button class="tab-btn" onclick="filterByType('petits-fruits',this)">🍓 Petits fruits</button>
+    <button class="tab-btn" onclick="filterByType('semis',this)">🌱 Semis</button>
+  </div>
+  <div class="plant-list" id="plantsList"></div>
+</div>
+
+<!-- PAGE PLANNING -->
+<div class="page" id="page-planning">
+  <div class="section-title">📅 Planning</div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showPlanningTab('week',this)">Cette semaine</button>
+    <button class="tab-btn" onclick="showPlanningTab('month',this)">Ce mois</button>
+    <button class="tab-btn" onclick="showPlanningTab('all',this)">Tout</button>
+  </div>
+  <div id="planningContainer"></div>
+  <div style="padding:0 16px 16px">
+    <button class="btn btn-secondary" onclick="openAddTaskModal()">+ Ajouter une tâche manuellement</button>
+  </div>
+</div>
+
+<!-- PAGE JOURNAL -->
+<div class="page" id="page-journal">
+  <div class="section-title">📖 Journal</div>
+  <div id="journalContainer"></div>
+</div>
+
+<!-- PAGE CONSEILS & IA -->
+<div class="page" id="page-ia">
+  <div class="section-title">🌿 Conseils & IA</div>
+  <div class="ia-section">
+
+    <!-- Alertes urgentes -->
+    <div id="urgentAlerts"></div>
+
+    <!-- Conseils du mois auto -->
+    <div id="monthlyAdvice"></div>
+
+    <!-- Bouton Claude gratuit -->
+    <div class="ia-card">
+      <h3>🤖 Demander à Claude</h3>
+      <p>Pose une question précise sur une de tes plantes. Claude.ai est gratuit et t'ouvrira directement avec ta question préparée.</p>
+      <div style="margin-top:16px">
+        <div class="form-group">
+          <label class="form-label" style="color:var(--green-pale)">Plante concernée</label>
+          <select class="form-select" id="iaPlantSelect" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:white">
+            <option value="">Question générale sur mon jardin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="color:var(--green-pale)">Ta question</label>
+          <textarea class="form-textarea" id="iaQuestion" rows="3" placeholder="Ex: Est-ce que je dois tailler mon olivier maintenant ? Il a des feuilles qui jaunissent..." style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:white"></textarea>
+        </div>
+        <button class="btn-claude" onclick="openClaude()">
+          <span style="font-size:20px">✨</span> Ouvrir Claude.ai (gratuit)
+        </button>
+        <div style="font-size:11px;color:var(--green-pale);text-align:center;margin-top:4px">Ta question sera préparée automatiquement → tu n'as qu'à envoyer</div>
+      </div>
+    </div>
+
+    <!-- Calendrier saisonnier complet -->
+    <div class="card">
+      <div style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:12px">📆 Calendrier du mois</div>
+      <div id="seasonalCalendar"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showPage('carte',this)"><span class="nav-icon">🗺️</span><span class="nav-label">Carte</span></button>
+  <button class="nav-btn" onclick="showPage('plantes',this)"><span class="nav-icon">🌱</span><span class="nav-label">Plantes</span></button>
+  <button class="nav-btn" onclick="showPage('planning',this)"><span class="nav-icon">📅</span><span class="nav-label">Planning</span></button>
+  <button class="nav-btn" onclick="showPage('journal',this)"><span class="nav-icon">📖</span><span class="nav-label">Journal</span></button>
+  <button class="nav-btn" onclick="showPage('ia',this)"><span class="nav-icon">🌿</span><span class="nav-label">Conseils</span></button>
+</nav>
+
+<button class="fab" id="fab" onclick="openAddModal()">＋</button>
+
+<!-- MODAL PLANTE -->
+<div class="modal-overlay" id="modalPlante">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>🌱 Nouvelle plante</h2>
+    <div class="form-group">
+      <label class="form-label">Photo</label>
+      <div class="photo-upload" id="plantPhotoUpload" onclick="document.getElementById('plantPhotoFile').click()">
+        <span style="font-size:30px">📷</span>
+        <span style="font-size:13px;color:var(--text-light);font-weight:500">Prendre une photo</span>
+        <input type="file" id="plantPhotoFile" accept="image/*" capture="environment" onchange="handlePlantPhoto(this)">
+      </div>
+    </div>
+    <div id="iaRecognizeBtn" style="display:none;margin-bottom:16px">
+      <button class="btn-claude" onclick="recognizePlant()" id="recognizeBtn">
+        <span style="font-size:18px">🔍</span> Identifier la plante avec l'IA
+      </button>
+      <div id="recognizeStatus" style="font-size:12px;color:var(--text-light);text-align:center;margin-top:6px"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nom *</label>
+      <input type="text" class="form-input" id="plantName" placeholder="Ex: Olivier, Monstera, Tomate…">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Espèce (pour les conseils automatiques)</label>
+      <select class="form-select" id="plantSpecies">
+        <option value="">-- Choisir une espèce connue --</option>
+        <optgroup label="🌲 Arbres">
+          <option value="olivier">Olivier</option>
+          <option value="figuier">Figuier</option>
+          <option value="citronnier">Citronnier / Agrume</option>
+          <option value="pommier">Pommier</option>
+          <option value="poirier">Poirier</option>
+          <option value="cerisier">Cerisier</option>
+          <option value="prunier">Prunier</option>
+        </optgroup>
+        <optgroup label="🍓 Petits fruits">
+          <option value="framboisier">Framboisier</option>
+          <option value="cassissier">Cassissier</option>
+          <option value="groseillier">Groseillier</option>
+          <option value="fraisier">Fraisier</option>
+        </optgroup>
+        <optgroup label="🌸 Fleurs & arbustes">
+          <option value="lavande">Lavande</option>
+          <option value="chevrefeuille">Chèvrefeuille</option>
+          <option value="rose">Rosier</option>
+          <option value="hydrangea">Hortensia</option>
+        </optgroup>
+        <optgroup label="🥕 Potager">
+          <option value="tomate">Tomate</option>
+          <option value="courgette">Courgette</option>
+          <option value="haricot">Haricot</option>
+          <option value="salade">Salade / Laitue</option>
+          <option value="carotte">Carotte</option>
+          <option value="poivron">Poivron</option>
+          <option value="concombre">Concombre</option>
+          <option value="basilic">Basilic</option>
+          <option value="persil">Persil</option>
+        </optgroup>
+        <optgroup label="🏠 Plantes intérieur">
+          <option value="monstera">Monstera</option>
+          <option value="pothos">Pothos</option>
+          <option value="ficus">Ficus</option>
+          <option value="orchidee">Orchidée</option>
+          <option value="succulente">Succulente / Cactus</option>
+          <option value="fougere">Fougère</option>
+          <option value="calathea">Calathea</option>
+        </optgroup>
+        <option value="autre">Autre (conseils généraux)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Type *</label>
+      <select class="form-select" id="plantType">
+        <option value="interieur">🏠 Plante intérieure</option>
+        <option value="exterieur">🌳 Plante extérieure</option>
+        <option value="arbre">🌲 Arbre</option>
+        <option value="potager">🥕 Potager</option>
+        <option value="petits-fruits">🍓 Petits fruits</option>
+        <option value="semis">🌱 Semis</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Zone *</label>
+      <select class="form-select" id="plantZone"><option value="">Choisir…</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Fréquence d'arrosage (jours)</label>
+      <input type="number" class="form-input" id="plantWatering" placeholder="Ex: 7" min="1" max="90">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Dernier arrosage</label>
+      <input type="date" class="form-input" id="plantLastWatered">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date de plantation</label>
+      <input type="date" class="form-input" id="plantDate">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" id="plantNotes" placeholder="Observations, souvenirs…"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-secondary" onclick="closeModal('modalPlante')" style="flex:1">Annuler</button>
+      <button class="btn btn-primary" onclick="savePlant()" style="flex:2">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ZONE -->
+<div class="modal-overlay" id="modalZone">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>🗺️ Nouvelle zone</h2>
+    <div class="form-group">
+      <label class="form-label">Nom *</label>
+      <input type="text" class="form-input" id="zoneName" placeholder="Ex: Salon, Terrasse, Potager…">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select class="form-select" id="zoneType">
+        <option value="interieur">🏠 Intérieur</option>
+        <option value="exterieur">🌳 Extérieur</option>
+        <option value="potager">🥕 Potager</option>
+        <option value="verger">🌲 Verger</option>
+        <option value="balcon">🌸 Balcon / Terrasse</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Icône</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="iconPicker">
+        <span class="icon-opt" onclick="selectIcon(this,'🏠')" style="font-size:28px;cursor:pointer;padding:8px;border-radius:10px;background:var(--green-mist)">🏠</span>
+        <span class="icon-opt" onclick="selectIcon(this,'🌿')" style="font-size:28px;cursor:pointer;padding:8px;border-radius:10px;background:var(--green-pale)">🌿</span>
+        <span class="icon-opt" onclick="selectIcon(this,'🌳')" style="font-size:28px;cursor:pointer;padding:8px;border-radius:10px;background:var(--green-mist)">🌳</span>
+        <span class="icon-opt" onclick="selectIcon(this,'🥕')" style="font-size:28px;cursor:pointer;padding:8px;border-radius:10px;background:var(--green-mist)">🥕</span>
+        <span class="icon-opt" onclick="selectIcon(this,'🌸')" style="font-size:28px;cursor:pointer;padding:8px;border-radius:10px;background:var(--green-mist)">🌸</span>
+        <span class="icon-opt" onclick="selectIcon(this,'🍓')" style="font-size:28px;cursor:pointer;padding:8px;border-radius:10px;background:var(--green-mist)">🍓</span>
+        <span class="icon-opt" onclick="selectIcon(this,'🌲')" style="font-size:28px;cursor:pointer;padding:8px;border-radius:10px;background:var(--green-mist)">🌲</span>
+        <span class="icon-opt" onclick="selectIcon(this,'🪴')" style="font-size:28px;cursor:pointer;padding:8px;border-radius:10px;background:var(--green-mist)">🪴</span>
+        <span class="icon-opt" onclick="selectIcon(this,'🫒')" style="font-size:28px;cursor:pointer;padding:8px;border-radius:10px;background:var(--green-mist)">🫒</span>
+        <span class="icon-opt" onclick="selectIcon(this,'🌻')" style="font-size:28px;cursor:pointer;padding:8px;border-radius:10px;background:var(--green-mist)">🌻</span>
+      </div>
+      <input type="hidden" id="zoneIcon" value="🌿">
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-secondary" onclick="closeModal('modalZone')" style="flex:1">Annuler</button>
+      <button class="btn btn-primary" onclick="saveZone()" style="flex:2">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TÂCHE -->
+<div class="modal-overlay" id="modalTask">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>📅 Nouvelle tâche</h2>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select class="form-select" id="taskType">
+        <option value="arrosage">💧 Arrosage</option>
+        <option value="taille">✂️ Taille</option>
+        <option value="rempotage">🪴 Rempotage</option>
+        <option value="semis">🌱 Semis</option>
+        <option value="recolte">🥕 Récolte</option>
+        <option value="traitement">🧪 Traitement</option>
+        <option value="fertilisation">🌿 Fertilisation</option>
+        <option value="autre">📝 Autre</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input type="text" class="form-input" id="taskTitle" placeholder="Ex: Tailler les branches mortes">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Plante</label>
+      <select class="form-select" id="taskPlant"><option value="">Toutes</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date *</label>
+      <input type="date" class="form-input" id="taskDate">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" id="taskNotes" rows="3" placeholder="Détails…"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-secondary" onclick="closeModal('modalTask')" style="flex:1">Annuler</button>
+      <button class="btn btn-primary" onclick="saveTask()" style="flex:2">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL JOURNAL -->
+<div class="modal-overlay" id="modalJournal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>📖 Nouvelle entrée</h2>
+    <div class="form-group">
+      <label class="form-label">Photo</label>
+      <div class="photo-upload" id="journalPhotoUpload" onclick="document.getElementById('journalPhotoFile').click()">
+        <span style="font-size:30px">📷</span>
+        <span style="font-size:13px;color:var(--text-light);font-weight:500">Prendre une photo</span>
+        <input type="file" id="journalPhotoFile" accept="image/*" capture="environment" onchange="handleJournalPhoto(this)">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Titre *</label>
+      <input type="text" class="form-input" id="journalTitle" placeholder="Ex: Première fleur de l'olivier !">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Plante</label>
+      <select class="form-select" id="journalPlant"><option value="">Note générale</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Observation</label>
+      <textarea class="form-textarea" id="journalContent" placeholder="Ce que tu as observé, fait, découvert…"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-secondary" onclick="closeModal('modalJournal')" style="flex:1">Annuler</button>
+      <button class="btn btn-primary" onclick="saveJournalEntry()" style="flex:2">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETAIL PLANTE -->
+<div class="modal-overlay" id="modalDetail" style="align-items:flex-start">
+  <div class="modal" style="border-radius:0;max-height:100vh;padding:0;min-height:100vh">
+    <div class="detail-header" id="detailHeader">
+      <div class="detail-header-emoji" id="detailHeaderEmoji">🌿</div>
+      <button class="detail-back" onclick="closeModal('modalDetail')">←</button>
+    </div>
+    <div class="detail-content">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div>
+          <div class="detail-name" id="detailName"></div>
+          <div class="detail-latin" id="detailLatin"></div>
+        </div>
+        <span class="type-badge" id="detailType" style="margin-top:6px"></span>
+      </div>
+      <div class="detail-grid" id="detailGrid"></div>
+      <div id="detailNotes" style="font-size:14px;color:var(--text-mid);line-height:1.6;margin-top:4px"></div>
+
+      <!-- Conseils spécifiques à la plante -->
+      <div id="detailAdvice" style="margin-top:16px"></div>
+
+      <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+        <button class="btn btn-primary" id="detailWaterBtn">💧 Arrosé aujourd'hui</button>
+        <button class="btn btn-secondary" onclick="addJournalForPlant()">📖 Ajouter au journal</button>
+        <button class="btn-claude" onclick="askClaudeForCurrentPlant()" style="margin-bottom:0">✨ Demander conseil à Claude</button>
+      </div>
+
+      <div style="margin-top:20px">
+        <div style="font-family:'Playfair Display',serif;font-size:17px;margin-bottom:12px">Historique</div>
+        <div id="detailHistory"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════
+const SUPABASE_URL = 'https://nwnosgijueiwiztszklb.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im53bm9zZ2lqdWVpd2l6dHN6a2xiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2OTY1MjMsImV4cCI6MjA5MzI3MjUyM30.WhXuIwwczdwPInF6sa7IQCJ31WwtacCnXjbL-d42YYk';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+// Clé API gérée côté serveur via Netlify Functions
+
+// ══════════════════════════════════════════
+// BASE HORTICOLE — CALENDRIER COMPLET
+// ══════════════════════════════════════════
+const HORTICAL = {
+  olivier: {
+    emoji: '🫒', nom: 'Olivier',
+    arrosage: { printemps: 10, ete: 7, automne: 14, hiver: 21 },
+    taches: [
+      { mois: [3,4], type: 'taille', titre: 'Taille de formation', desc: 'Supprimer les branches mortes, croisant, vers l\'intérieur. Éclaircir le centre pour aérer. Ne jamais couper plus d\'1/3 du feuillage.' },
+      { mois: [4,5], type: 'traitement', titre: 'Traitement bouillie bordelaise', desc: 'Protéger contre l\'œil de paon (maladie fongique). Pulvériser sur feuillage par temps sec.' },
+      { mois: [5], type: 'fertilisation', titre: 'Fertilisation printanière', desc: 'Apporter un engrais spécial olivier ou agrumes. Favorise la floraison et la nouaison.' },
+      { mois: [6,7,8], type: 'recolte', titre: 'Surveillance floraison / fruits', desc: 'Vérifier la nouaison. Arroser régulièrement pendant la formation des olives.' },
+      { mois: [10,11], type: 'recolte', titre: 'Récolte des olives', desc: 'Olives vertes en octobre, noires en novembre-décembre. Étaler un filet sous l\'arbre.' },
+      { mois: [11,12], type: 'traitement', titre: 'Traitement hivernal', desc: 'Dernière bouillie bordelaise avant l\'hiver. Protéger le pied si gel prévu.' },
+    ]
+  },
+  figuier: {
+    emoji: '🍃', nom: 'Figuier',
+    arrosage: { printemps: 7, ete: 5, automne: 10, hiver: 30 },
+    taches: [
+      { mois: [2,3], type: 'taille', titre: 'Taille hivernale', desc: 'Couper les branches mortes et celles qui ont produit. Garder 3-4 charpentières principales.' },
+      { mois: [5], type: 'fertilisation', titre: 'Fertilisation', desc: 'Engrais riche en potasse pour favoriser les fruits.' },
+      { mois: [7,8], type: 'recolte', titre: 'Récolte figues fleurs', desc: 'Première production (figues fleurs). Cueillir quand elles se courbent et sont molles.' },
+      { mois: [9,10], type: 'recolte', titre: 'Récolte figues d\'automne', desc: 'Production principale. Récolter tous les 2-3 jours.' },
+    ]
+  },
+  citronnier: {
+    emoji: '🍋', nom: 'Citronnier / Agrume',
+    arrosage: { printemps: 5, ete: 3, automne: 7, hiver: 10 },
+    taches: [
+      { mois: [3,4], type: 'rempotage', titre: 'Rempotage printanier', desc: 'Si en pot, rempoter dans un pot légèrement plus grand avec substrat spécial agrumes.' },
+      { mois: [4,5,6], type: 'fertilisation', titre: 'Fertilisation régulière', desc: 'Engrais liquide agrumes toutes les 2 semaines. Riche en azote au printemps.' },
+      { mois: [10], type: 'traitement', titre: 'Rentrer avant les gelées', desc: 'Rentrer en intérieur lumineux avant les premières gelées (< 5°C).' },
+    ]
+  },
+  pommier: {
+    emoji: '🍎', nom: 'Pommier',
+    arrosage: { printemps: 7, ete: 5, automne: 14, hiver: 0 },
+    taches: [
+      { mois: [1,2], type: 'taille', titre: 'Taille de fructification', desc: 'Raccourcir les rameaux d\'un tiers. Supprimer bois mort et drageons. Tailler par temps sec.' },
+      { mois: [3], type: 'traitement', titre: 'Traitement tavelure', desc: 'Bouillie bordelaise au débourrement. Prévenir la tavelure avant les pluies printanières.' },
+      { mois: [5,6], type: 'fertilisation', titre: 'Éclaircissage & fertilisation', desc: 'Supprimer les petits fruits en excès (garder 1 fruit tous les 10 cm). Apporter engrais ternaire.' },
+      { mois: [9,10], type: 'recolte', titre: 'Récolte', desc: 'Cueillir quand la pomme se détache facilement en tournant. Stocker en cave fraîche.' },
+    ]
+  },
+  poirier: {
+    emoji: '🍐', nom: 'Poirier',
+    arrosage: { printemps: 7, ete: 5, automne: 14, hiver: 0 },
+    taches: [
+      { mois: [1,2], type: 'taille', titre: 'Taille hivernale', desc: 'Supprimer les branches mortes. Tailler les gourmands. Raccourcir rameaux à 3-4 boutons.' },
+      { mois: [3], type: 'traitement', titre: 'Traitement feu bactérien', desc: 'Surveiller les signes de feu bactérien. Bouillie bordelaise préventive.' },
+      { mois: [8,9], type: 'recolte', titre: 'Récolte', desc: 'Cueillir avant pleine maturité (chair encore ferme). Laisser mûrir à l\'intérieur.' },
+    ]
+  },
+  cerisier: {
+    emoji: '🍒', nom: 'Cerisier',
+    arrosage: { printemps: 10, ete: 7, automne: 14, hiver: 0 },
+    taches: [
+      { mois: [7,8], type: 'taille', titre: 'Taille estivale', desc: 'Tailler après récolte, jamais en hiver (risque de maladies fongiques). Supprimer gourmands.' },
+      { mois: [5], type: 'traitement', titre: 'Protection mouche de la cerise', desc: 'Poser des pièges à phéromones. Protéger les fruits avec filet si besoin.' },
+      { mois: [6,7], type: 'recolte', titre: 'Récolte cerises', desc: 'Cueillir avec la queue pour prolonger conservation. Récolter en plusieurs fois.' },
+    ]
+  },
+  prunier: {
+    emoji: '🫐', nom: 'Prunier',
+    arrosage: { printemps: 7, ete: 5, automne: 14, hiver: 0 },
+    taches: [
+      { mois: [2,3], type: 'taille', titre: 'Taille de formation', desc: 'Équilibrer la charpente. Supprimer bois mort et branches se croisant.' },
+      { mois: [8,9], type: 'recolte', titre: 'Récolte prunes', desc: 'Cueillir à pleine maturité, légèrement mou au toucher. Faire par temps sec.' },
+    ]
+  },
+  framboisier: {
+    emoji: '🍓', nom: 'Framboisier',
+    arrosage: { printemps: 5, ete: 3, automne: 7, hiver: 14 },
+    taches: [
+      { mois: [2,3], type: 'taille', titre: 'Taille hivernale', desc: 'Couper au sol toutes les tiges ayant produit (brunes). Garder les tiges vertes de l\'année.' },
+      { mois: [4], type: 'fertilisation', titre: 'Fertilisation printanière', desc: 'Apporter compost ou engrais organique au pied. Pailler pour conserver l\'humidité.' },
+      { mois: [7,8], type: 'recolte', titre: 'Récolte framboises', desc: 'Cueillir tous les 2 jours quand les fruits se détachent facilement. Consommer rapidement.' },
+      { mois: [9,10], type: 'recolte', titre: 'Récolte remontante', desc: 'Pour les variétés remontantes, 2ème récolte en automne. Laisser les tiges en place.' },
+    ]
+  },
+  cassissier: {
+    emoji: '🫐', nom: 'Cassissier',
+    arrosage: { printemps: 7, ete: 5, automne: 10, hiver: 14 },
+    taches: [
+      { mois: [2,3], type: 'taille', titre: 'Taille de renouvellement', desc: 'Supprimer 1/3 des vieilles branches (> 3 ans, plus foncées). Garder jeunes tiges pour production future.' },
+      { mois: [7], type: 'recolte', titre: 'Récolte cassis', desc: 'Cueillir les grappes entières quand tous les fruits sont noirs. Délicieux en confiture.' },
+    ]
+  },
+  groseillier: {
+    emoji: '🍇', nom: 'Groseillier',
+    arrosage: { printemps: 7, ete: 5, automne: 10, hiver: 14 },
+    taches: [
+      { mois: [2,3], type: 'taille', titre: 'Taille hivernale', desc: 'Supprimer vieux bois. Éclaircir le centre. Raccourcir rameaux latéraux à 2-3 yeux.' },
+      { mois: [6,7], type: 'recolte', titre: 'Récolte groseilles', desc: 'Cueillir les grappes entières quand les fruits sont bien colorés et légèrement translucides.' },
+    ]
+  },
+  fraisier: {
+    emoji: '🍓', nom: 'Fraisier',
+    arrosage: { printemps: 4, ete: 2, automne: 5, hiver: 10 },
+    taches: [
+      { mois: [3,4], type: 'fertilisation', titre: 'Reprise de végétation', desc: 'Apporter engrais spécial fraisier. Supprimer feuilles mortes. Pailler le sol.' },
+      { mois: [5,6,7], type: 'recolte', titre: 'Récolte fraises', desc: 'Cueillir tous les 2 jours par temps chaud. Bien rouges jusqu\'au calice.' },
+      { mois: [7,8], type: 'autre', titre: 'Supprimer les stolons', desc: 'Couper les stolons (tiges rampantes) sauf si tu veux multiplier les plants.' },
+      { mois: [9], type: 'rempotage', titre: 'Renouvellement des plants', desc: 'Planter les nouveaux stolons enracinés. Remplacer les plants de plus de 3 ans.' },
+    ]
+  },
+  lavande: {
+    emoji: '💜', nom: 'Lavande',
+    arrosage: { printemps: 14, ete: 10, automne: 21, hiver: 0 },
+    taches: [
+      { mois: [3], type: 'taille', titre: 'Taille de printemps', desc: 'Tailler au 2/3 des tiges vertes (jamais dans le vieux bois). Donne une belle forme arrondie.' },
+      { mois: [8], type: 'taille', titre: 'Taille après floraison', desc: 'Couper les tiges florales fanées + 1/3 du feuillage. Évite le bois mort au cœur.' },
+      { mois: [6,7], type: 'recolte', titre: 'Récolte lavande', desc: 'Couper les tiges florales quand la moitié des fleurs est ouverte. Sécher en bouquet.' },
+    ]
+  },
+  chevrefeuille: {
+    emoji: '🌸', nom: 'Chèvrefeuille',
+    arrosage: { printemps: 7, ete: 5, automne: 10, hiver: 21 },
+    taches: [
+      { mois: [3,4], type: 'taille', titre: 'Taille printanière', desc: 'Raccourcir les tiges d\'1/3 après floraison. Supprimer bois mort. Guider sur le support.' },
+      { mois: [5], type: 'fertilisation', titre: 'Fertilisation', desc: 'Engrais fleuraison pour stimuler la floraison estivale.' },
+    ]
+  },
+  rose: {
+    emoji: '🌹', nom: 'Rosier',
+    arrosage: { printemps: 5, ete: 3, automne: 7, hiver: 14 },
+    taches: [
+      { mois: [2,3], type: 'taille', titre: 'Grande taille annuelle', desc: 'Couper à 30-40 cm du sol (rosiers buissons). Couper en biseau au-dessus d\'un œil tourné vers l\'extérieur.' },
+      { mois: [5,6,9], type: 'traitement', titre: 'Traitement pucerons / maladies', desc: 'Surveiller pucerons, oïdium, taches noires. Traiter avec savon noir ou bouillie bordelaise.' },
+      { mois: [11], type: 'taille', titre: 'Taille d\'automne', desc: 'Supprimer les fleurs fanées. Légère mise en forme. Butter le pied pour l\'hiver.' },
+    ]
+  },
+  tomate: {
+    emoji: '🍅', nom: 'Tomate',
+    arrosage: { printemps: 3, ete: 2, automne: 3, hiver: 0 },
+    taches: [
+      { mois: [2,3], type: 'semis', titre: 'Semis en intérieur', desc: 'Semer en godets à 20-25°C. Garder humide. Lever en 8-12 jours.' },
+      { mois: [4], type: 'rempotage', titre: 'Repiquer en pot', desc: 'Repiquer dans des pots de 9 cm quand 2 vraies feuilles. Garder en intérieur lumineux.' },
+      { mois: [5], type: 'autre', titre: 'Plantation définitive', desc: 'Planter dehors après les Saints de Glace (15 mai). Enterrer jusqu\'aux premières feuilles.' },
+      { mois: [6,7,8], type: 'taille', titre: 'Ébourgeonnage', desc: 'Supprimer les gourmands (tiges axillaires) toutes les semaines. Garder 1 ou 2 tiges.' },
+      { mois: [7,8,9], type: 'recolte', titre: 'Récolte tomates', desc: 'Cueillir quand bien rouge et légèrement souple. Ne pas réfrigérer — perd son goût !' },
+    ]
+  },
+  courgette: {
+    emoji: '🥒', nom: 'Courgette',
+    arrosage: { printemps: 3, ete: 1, automne: 3, hiver: 0 },
+    taches: [
+      { mois: [4], type: 'semis', titre: 'Semis en intérieur', desc: 'Semer à plat dans un pot à 20°C. Lève rapidement (5-7 jours).' },
+      { mois: [5], type: 'autre', titre: 'Plantation dehors', desc: 'Planter en sol riche après les gelées. Espacer de 80 cm minimum.' },
+      { mois: [6,7,8], type: 'recolte', titre: 'Récolte courgettes', desc: 'Cueillir jeunes (15-20 cm) pour meilleur goût. Récolter tous les 2-3 jours.' },
+    ]
+  },
+  haricot: {
+    emoji: '🫘', nom: 'Haricot',
+    arrosage: { printemps: 3, ete: 2, automne: 3, hiver: 0 },
+    taches: [
+      { mois: [5,6], type: 'semis', titre: 'Semis en pleine terre', desc: 'Semer directement en terre à 5 cm de profondeur, tous les 10 cm. Levée en 8-10 jours.' },
+      { mois: [7,8], type: 'recolte', titre: 'Récolte haricots', desc: 'Cueillir avant que les graines se forment. Récolter tous les 2-3 jours pour stimuler production.' },
+    ]
+  },
+  salade: {
+    emoji: '🥬', nom: 'Salade / Laitue',
+    arrosage: { printemps: 2, ete: 1, automne: 2, hiver: 0 },
+    taches: [
+      { mois: [3,4,5,8,9], type: 'semis', titre: 'Semis échelonnés', desc: 'Semer toutes les 3 semaines pour une récolte continue. En godets ou en place.' },
+      { mois: [4,5,6,9,10], type: 'recolte', titre: 'Récolte salades', desc: 'Couper la tête entière ou prélever feuille par feuille (mesclun). Récolter le matin.' },
+    ]
+  },
+  carotte: {
+    emoji: '🥕', nom: 'Carotte',
+    arrosage: { printemps: 3, ete: 2, automne: 4, hiver: 0 },
+    taches: [
+      { mois: [3,4,5], type: 'semis', titre: 'Semis en place', desc: 'Semer en lignes en sol meuble et profond. Éclaircir à 5 cm quand 2 feuilles.' },
+      { mois: [7,8,9,10], type: 'recolte', titre: 'Récolte carottes', desc: 'Arracher quand le collet est bien coloré. Stocker en sable humide en cave.' },
+    ]
+  },
+  poivron: {
+    emoji: '🫑', nom: 'Poivron',
+    arrosage: { printemps: 3, ete: 2, automne: 3, hiver: 0 },
+    taches: [
+      { mois: [2,3], type: 'semis', titre: 'Semis en intérieur', desc: 'Semer à 25°C minimum. Lève en 15-20 jours. Garder au chaud.' },
+      { mois: [5], type: 'autre', titre: 'Plantation dehors', desc: 'Planter après les Saints de Glace en sol chaud et riche.' },
+      { mois: [7,8,9], type: 'recolte', titre: 'Récolte poivrons', desc: 'Vert dès 60 jours, rouge/jaune à pleine maturité. Couper avec ciseau.' },
+    ]
+  },
+  basilic: {
+    emoji: '🌿', nom: 'Basilic',
+    arrosage: { printemps: 2, ete: 1, automne: 2, hiver: 0 },
+    taches: [
+      { mois: [4,5], type: 'semis', titre: 'Semis ou plantation', desc: 'Semer à 20°C ou acheter un plant. Aime la chaleur, craint le froid.' },
+      { mois: [6,7,8,9], type: 'taille', titre: 'Pincer les fleurs', desc: 'Supprimer les tiges florales dès leur apparition pour prolonger la production de feuilles.' },
+      { mois: [9], type: 'autre', titre: 'Rentrer avant le froid', desc: 'Le basilic meurt en dessous de 10°C. Rentrer en intérieur lumineux ou faire des conserves.' },
+    ]
+  },
+  monstera: {
+    emoji: '🌿', nom: 'Monstera',
+    arrosage: { printemps: 7, ete: 7, automne: 10, hiver: 14 },
+    taches: [
+      { mois: [4,5], type: 'rempotage', titre: 'Rempotage printanier', desc: 'Rempoter si racines sortent du pot. Pot légèrement plus grand avec substrat drainant.' },
+      { mois: [4,5,6,7,8,9], type: 'fertilisation', titre: 'Fertilisation croissance', desc: 'Engrais liquide plantes vertes toutes les 2 semaines. Arrêter en hiver.' },
+      { mois: [11,12,1,2], type: 'autre', titre: 'Période de repos', desc: 'Réduire arrosage et arrêter fertilisation. Éloigner des radiateurs. Humidifier les feuilles.' },
+    ]
+  },
+  pothos: {
+    emoji: '🪴', nom: 'Pothos',
+    arrosage: { printemps: 10, ete: 7, automne: 14, hiver: 21 },
+    taches: [
+      { mois: [4,5], type: 'taille', titre: 'Taille et bouturage', desc: 'Couper les tiges longues. Bouturer facilement dans l\'eau. Très résistant.' },
+      { mois: [4,5,6], type: 'fertilisation', titre: 'Fertilisation légère', desc: 'Engrais dilué une fois par mois au printemps et été.' },
+    ]
+  },
+  orchidee: {
+    emoji: '🌸', nom: 'Orchidée',
+    arrosage: { printemps: 7, ete: 7, automne: 10, hiver: 14 },
+    taches: [
+      { mois: [1,2,3], type: 'autre', titre: 'Stimuler la floraison', desc: 'Placer dans un endroit plus frais (15°C la nuit) pendant 4-6 semaines pour déclencher la floraison.' },
+      { mois: [4,5,6,7,8,9], type: 'fertilisation', titre: 'Engrais orchidée', desc: 'Engrais spécial orchidée dilué toutes les 2 arrosages. Riche en potasse pour la floraison.' },
+      { mois: [6,7], type: 'taille', titre: 'Taille tige florale', desc: 'Après floraison, couper la tige au-dessus d\'un nœud ou à la base selon l\'espèce.' },
+    ]
+  },
+  succulente: {
+    emoji: '🌵', nom: 'Succulente / Cactus',
+    arrosage: { printemps: 14, ete: 10, automne: 21, hiver: 45 },
+    taches: [
+      { mois: [4,5], type: 'rempotage', titre: 'Rempotage et bouturage', desc: 'Rempoter dans substrat très drainant (mélange terre + sable + graviers). Bouturer les rosettes.' },
+      { mois: [4,5,6,7,8], type: 'fertilisation', titre: 'Fertilisation estivale', desc: 'Engrais cactées dilué toutes les 6 semaines. Pas d\'engrais en hiver.' },
+    ]
+  },
+  autre: {
+    emoji: '🌱', nom: 'Plante',
+    arrosage: { printemps: 7, ete: 5, automne: 10, hiver: 14 },
+    taches: [
+      { mois: [3,4], type: 'fertilisation', titre: 'Fertilisation printanière', desc: 'Reprendre la fertilisation avec un engrais adapté. La végétation redémarre.' },
+      { mois: [10,11], type: 'autre', titre: 'Préparation hivernale', desc: 'Réduire arrosage et fertilisation. Protéger si nécessaire du gel.' },
+    ]
+  }
+};
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let allPlants = [], allZones = [], allTasks = [], allJournal = [];
+let currentPlantId = null, selectedIcon = '🌿';
+let plantPhotoBase64 = null, journalPhotoBase64 = null;
+let currentFilter = 'all', currentPlanningTab = 'week';
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+async function init() {
+  setHeaderDate();
+  setTodayDates();
+  await loadAll();
+  setTimeout(() => {
+    document.getElementById('loadingScreen').classList.add('hidden');
+    setTimeout(() => document.getElementById('loadingScreen').remove(), 600);
+  }, 1000);
+}
+
+function setHeaderDate() {
+  const opts = { weekday:'long', day:'numeric', month:'long' };
+  document.getElementById('headerDate').textContent =
+    new Date().toLocaleDateString('fr-FR', opts).replace(/^\w/, c => c.toUpperCase());
+}
+
+function setTodayDates() {
+  const today = new Date().toISOString().split('T')[0];
+  ['plantLastWatered','plantDate','taskDate'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = today;
+  });
+}
+
+// ══════════════════════════════════════════
+// LOAD
+// ══════════════════════════════════════════
+async function loadAll() {
+  const [z,p,t,j] = await Promise.all([
+    db.from('zones').select('*').order('created_at'),
+    db.from('plants').select('*').order('name'),
+    db.from('tasks').select('*').order('due_date'),
+    db.from('journal_entries').select('*').order('created_at',{ascending:false})
+  ]);
+  allZones = z.data||[]; allPlants = p.data||[];
+  allTasks = t.data||[]; allJournal = j.data||[];
+  renderAll();
+}
+
+function renderAll() {
+  renderZones(); renderPlants(); renderPlanning();
+  renderJournal(); renderConseils(); updateStats(); populateSelects();
+}
+
+// ══════════════════════════════════════════
+// STATS
+// ══════════════════════════════════════════
+function updateStats() {
+  document.getElementById('totalPlants').textContent = allPlants.length;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('totalTasks').textContent = allTasks.filter(t=>t.due_date===today&&!t.done).length;
+  document.getElementById('urgentWater').textContent = allPlants.filter(p=>getWaterStatus(p)==='urgent').length;
+}
+
+// ══════════════════════════════════════════
+// CALENDRIER HORTICOLE — GÉNÉRATION AUTO
+// ══════════════════════════════════════════
+function getCurrentSeason() {
+  const m = new Date().getMonth() + 1;
+  if (m >= 3 && m <= 5) return 'printemps';
+  if (m >= 6 && m <= 8) return 'ete';
+  if (m >= 9 && m <= 11) return 'automne';
+  return 'hiver';
+}
+
+function getArrosageRecommande(plant) {
+  if (plant.watering_frequency_days) return plant.watering_frequency_days;
+  const spec = HORTICAL[plant.species];
+  if (!spec) return 7;
+  return spec.arrosage[getCurrentSeason()] || 7;
+}
+
+function getTasksForPlantThisMonth(plant) {
+  if (!plant.species || !HORTICAL[plant.species]) return [];
+  const currentMonth = new Date().getMonth() + 1;
+  return HORTICAL[plant.species].taches.filter(t => t.mois.includes(currentMonth));
+}
+
+function getTasksForPlantNextMonths(plant, nbMonths = 3) {
+  if (!plant.species || !HORTICAL[plant.species]) return [];
+  const tasks = [];
+  for (let i = 0; i < nbMonths; i++) {
+    const d = new Date(); d.setMonth(d.getMonth() + i);
+    const m = d.getMonth() + 1;
+    HORTICAL[plant.species].taches.forEach(t => {
+      if (t.mois.includes(m)) tasks.push({ ...t, targetMonth: m, targetDate: d });
+    });
+  }
+  return tasks;
+}
+
+// ══════════════════════════════════════════
+// RENDER CONSEILS
+// ══════════════════════════════════════════
+function renderConseils() {
+  renderUrgentAlerts();
+  renderMonthlyAdvice();
+  renderSeasonalCalendar();
+}
+
+function renderUrgentAlerts() {
+  const container = document.getElementById('urgentAlerts');
+  const urgentWater = allPlants.filter(p => getWaterStatus(p) === 'urgent');
+  const urgentTasks = allPlants.flatMap(p => getTasksForPlantThisMonth(p).map(t => ({...t, plant: p})));
+
+  let html = '';
+  if (urgentWater.length > 0) {
+    html += `<div class="notif-banner"><div class="notif-icon">💧</div><div><strong>${urgentWater.length} plante${urgentWater.length>1?'s':''} en attente d'arrosage !</strong><br>${urgentWater.map(p=>p.name).join(', ')}</div></div>`;
+  }
+  if (urgentTasks.length > 0) {
+    html += `<div class="notif-banner" style="background:linear-gradient(135deg,#2d5a27,#4a9e3f)"><div class="notif-icon">📋</div><div><strong>${urgentTasks.length} tâche${urgentTasks.length>1?'s':''} à faire ce mois-ci</strong><br>${urgentTasks.slice(0,3).map(t=>`${t.plant.name} : ${t.titre}`).join(' · ')}</div></div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderMonthlyAdvice() {
+  const container = document.getElementById('monthlyAdvice');
+  if (allPlants.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const currentMonth = new Date().getMonth() + 1;
+  const monthNames = ['','Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+  let html = `<div style="font-family:'Playfair Display',serif;font-size:18px;padding:20px 16px 8px;color:var(--text-dark)">📋 Ce mois-ci — ${monthNames[currentMonth]}</div>`;
+
+  let hasContent = false;
+  allPlants.forEach(plant => {
+    const tasks = getTasksForPlantThisMonth(plant);
+    if (tasks.length === 0) return;
+    hasContent = true;
+    const spec = HORTICAL[plant.species] || HORTICAL['autre'];
+    html += `<div class="conseil-card">
+      <div class="conseil-plant">${spec?.emoji || '🌱'} ${plant.name}</div>
+      ${tasks.map(t => {
+        const icons = { taille:'✂️', arrosage:'💧', fertilisation:'🌿', recolte:'🥕', semis:'🌱', rempotage:'🪴', traitement:'🧪', autre:'📝' };
+        return `<div class="conseil-item">
+          <span style="font-size:18px;flex-shrink:0">${icons[t.type]||'📝'}</span>
+          <div><strong>${t.titre}</strong><br>${t.desc}
+            <button onclick="createTaskFromAdvice('${plant.id}','${t.type}','${t.titre.replace(/'/g,"\\'")}',this)" style="margin-top:6px;display:inline-block;background:var(--green-mist);border:none;padding:4px 10px;border-radius:8px;font-size:12px;color:var(--green-mid);cursor:pointer;font-weight:600">+ Ajouter au planning</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  });
+
+  if (!hasContent) {
+    html += `<div class="card" style="text-align:center;color:var(--text-light);font-size:14px">Ajoute tes plantes avec leur espèce pour recevoir des conseils automatiques ce mois-ci 🌱</div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderSeasonalCalendar() {
+  const container = document.getElementById('seasonalCalendar');
+  const monthNames = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  const currentMonth = new Date().getMonth();
+
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px">';
+  monthNames.forEach((m, i) => {
+    const isActive = i === currentMonth;
+    html += `<span class="cal-month${isActive?' active-month':''}" title="${m}">${m.slice(0,1)}</span>`;
+  });
+  html += '</div>';
+
+  if (allPlants.length === 0) {
+    html += '<p style="font-size:13px;color:var(--text-light)">Ajoute tes plantes pour voir le calendrier personnalisé.</p>';
+    container.innerHTML = html;
+    return;
+  }
+
+  // Afficher les 3 prochains mois de tâches
+  const upcomingTasks = [];
+  allPlants.forEach(plant => {
+    const tasks = getTasksForPlantNextMonths(plant, 3);
+    tasks.forEach(t => upcomingTasks.push({ ...t, plant }));
+  });
+
+  if (upcomingTasks.length === 0) {
+    html += '<p style="font-size:13px;color:var(--text-light)">Rien de prévu dans les 3 prochains mois pour tes plantes.</p>';
+  } else {
+    const grouped = {};
+    upcomingTasks.forEach(t => {
+      const key = t.targetMonth;
+      if (!grouped[key]) grouped[key] = [];
+      if (!grouped[key].some(x => x.plant.id === t.plant.id && x.titre === t.titre)) {
+        grouped[key].push(t);
+      }
+    });
+    Object.keys(grouped).sort((a,b)=>a-b).forEach(m => {
+      const mName = ['','Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'][m];
+      html += `<div style="margin-bottom:12px"><div style="font-weight:700;font-size:13px;color:var(--text-mid);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">${mName}</div>`;
+      grouped[m].forEach(t => {
+        const icons = { taille:'✂️', arrosage:'💧', fertilisation:'🌿', recolte:'🥕', semis:'🌱', rempotage:'🪴', traitement:'🧪', autre:'📝' };
+        html += `<div style="font-size:13px;padding:6px 0;border-bottom:1px solid var(--green-mist);display:flex;gap:8px;align-items:flex-start">
+          <span>${icons[t.type]||'📝'}</span>
+          <div><span style="font-weight:600">${t.plant.name}</span> — ${t.titre}</div>
+        </div>`;
+      });
+      html += '</div>';
+    });
+  }
+  container.innerHTML = html;
+}
+
+async function createTaskFromAdvice(plantId, type, titre, btn) {
+  const today = new Date().toISOString().split('T')[0];
+  const { error } = await db.from('tasks').insert([{ type, title: titre, plant_id: plantId, due_date: today, notes: 'Généré automatiquement par le calendrier horticole' }]);
+  if (!error) {
+    showToast('✅ Ajouté au planning !');
+    btn.textContent = '✓ Ajouté';
+    btn.style.background = 'var(--green-pale)';
+    btn.disabled = true;
+    await loadAll();
+  }
+}
+
+// ══════════════════════════════════════════
+// CLAUDE.AI INTEGRATION (GRATUIT)
+// ══════════════════════════════════════════
+function openClaude() {
+  const plantId = document.getElementById('iaPlantSelect').value;
+  const plant = allPlants.find(p => p.id === plantId);
+  const question = document.getElementById('iaQuestion').value.trim();
+  const now = new Date();
+  const monthNames = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const month = monthNames[now.getMonth()];
+  const season = getCurrentSeason();
+
+  let prompt = `Je gère mon jardin avec l'appli Green Home. Nous sommes en ${month} (saison : ${season}).\n\n`;
+
+  if (plant) {
+    const spec = HORTICAL[plant.species];
+    prompt += `🌱 Plante concernée : ${plant.name}`;
+    if (plant.latin_name) prompt += ` (${plant.latin_name})`;
+    if (spec) prompt += ` — Espèce : ${spec.nom}`;
+    prompt += `\n📍 Type : ${getTypeLabel(plant.type)}\n`;
+    if (plant.watering_frequency_days) prompt += `💧 Arrosage habituel : tous les ${plant.watering_frequency_days} jours\n`;
+    if (plant.notes) prompt += `📝 Notes : ${plant.notes}\n`;
+    prompt += '\n';
+  } else {
+    // Donner le contexte de tout le jardin
+    prompt += `Mon jardin contient :\n`;
+    const types = {};
+    allPlants.forEach(p => { types[p.type] = (types[p.type]||[]).concat(p.name); });
+    Object.entries(types).forEach(([type, names]) => {
+      prompt += `- ${getTypeLabel(type)} : ${names.join(', ')}\n`;
+    });
+    prompt += '\n';
+  }
+
+  if (question) {
+    prompt += `❓ Ma question : ${question}`;
+  } else {
+    prompt += `Que dois-je faire en ${month} pour cette plante ? Quels soins, tailles, traitements ou récoltes sont nécessaires ?`;
+  }
+
+  const encoded = encodeURIComponent(prompt);
+  window.open(`https://claude.ai/new?q=${encoded}`, '_blank');
+}
+
+function askClaudeForCurrentPlant() {
+  closeModal('modalDetail');
+  setTimeout(() => {
+    showPage('ia', document.querySelectorAll('.nav-btn')[4]);
+    document.getElementById('iaPlantSelect').value = currentPlantId || '';
+    document.getElementById('iaQuestion').focus();
+  }, 300);
+}
+
+// ══════════════════════════════════════════
+// ZONES
+// ══════════════════════════════════════════
+function renderZones() {
+  const grid = document.getElementById('zonesGrid');
+  if (allZones.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🗺️</div><p>Commence par créer tes zones :<br>Salon, Terrasse, Potager…</p><button class="btn btn-primary" style="margin-top:16px;max-width:220px" onclick="openAddZoneModal()">+ Créer une zone</button></div>`;
+    return;
+  }
+  grid.innerHTML = allZones.map(z => {
+    const count = allPlants.filter(p => p.zone_id === z.id).length;
+    const urgentInZone = allPlants.filter(p => p.zone_id === z.id && getWaterStatus(p) === 'urgent').length;
+    return `<div class="zone-card" onclick="showZonePlants('${z.id}')" style="${urgentInZone > 0 ? 'border-left-color:#ef4444' : ''}">
+      <span class="zone-emoji">${z.icon||'🌿'}</span>
+      <div class="zone-name">${z.name}</div>
+      <div class="zone-count">${count} plante${count>1?'s':''}</div>
+      <div class="zone-badge">${urgentInZone > 0 ? '💧' + urgentInZone : count}</div>
+    </div>`;
+  }).join('') + `<div class="zone-card" onclick="openAddZoneModal()" style="border-left-color:var(--green-pale);opacity:0.6"><span class="zone-emoji">➕</span><div class="zone-name">Nouvelle zone</div><div class="zone-count">Ajouter un espace</div></div>`;
+}
+
+function showZonePlants(zoneId) {
+  const zone = allZones.find(z => z.id === zoneId);
+  if (!zone) return;
+  const plants = allPlants.filter(p => p.zone_id === zoneId);
+  document.getElementById('zonesGrid').style.display = 'none';
+  document.getElementById('zonePlantsList').style.display = 'block';
+  document.getElementById('zoneViewTitle').textContent = `${zone.icon} ${zone.name}`;
+  const c = document.getElementById('zonePlantsContainer');
+  c.innerHTML = plants.length === 0
+    ? `<div class="empty-state"><div class="empty-icon">${zone.icon}</div><p>Aucune plante dans cette zone.</p></div>`
+    : plants.map(p => renderPlantItem(p)).join('');
+}
+function closeZoneView() {
+  document.getElementById('zonesGrid').style.display = '';
+  document.getElementById('zonePlantsList').style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+// PLANTES
+// ══════════════════════════════════════════
+function getWaterStatus(plant) {
+  if (!plant.next_watering) return 'ok';
+  const diff = Math.ceil((new Date(plant.next_watering) - new Date()) / 86400000);
+  if (diff < 0) return 'urgent';
+  if (diff <= 2) return 'soon';
+  return 'ok';
+}
+function getWaterLabel(plant) {
+  if (!plant.next_watering) return '';
+  const diff = Math.ceil((new Date(plant.next_watering) - new Date()) / 86400000);
+  if (diff < 0) return `${Math.abs(diff)}j en retard`;
+  if (diff === 0) return "Aujourd'hui";
+  if (diff === 1) return 'Demain';
+  return `Dans ${diff}j`;
+}
+function getTypeEmoji(type) {
+  return {interieur:'🏠',exterieur:'🌳',arbre:'🌲',potager:'🥕','petits-fruits':'🍓',semis:'🌱'}[type]||'🌿';
+}
+function getTypeLabel(type) {
+  return {interieur:'Intérieur',exterieur:'Extérieur',arbre:'Arbre',potager:'Potager','petits-fruits':'Petits fruits',semis:'Semis'}[type]||type;
+}
+
+function renderPlantItem(p) {
+  const zone = allZones.find(z => z.id === p.zone_id);
+  const ws = getWaterStatus(p), wl = getWaterLabel(p);
+  const spec = HORTICAL[p.species];
+  const monthTasks = getTasksForPlantThisMonth(p);
+  const photoHtml = p.photo_url
+    ? `<div class="plant-photo"><img src="${p.photo_url}" alt="${p.name}"></div>`
+    : `<div class="plant-photo">${spec?.emoji || getTypeEmoji(p.type)}</div>`;
+  return `<div class="plant-item" onclick="openPlantDetail('${p.id}')">
+    ${photoHtml}
+    <div class="plant-info">
+      <div class="plant-name">${p.name}</div>
+      <div class="plant-zone">${zone?zone.icon+' '+zone.name:'—'} · <span class="type-badge type-${p.type}">${getTypeLabel(p.type)}</span>${monthTasks.length>0?` · <span style="color:var(--earth);font-weight:600;font-size:11px">📋 ${monthTasks.length} tâche${monthTasks.length>1?'s':''}</span>`:''}</div>
+    </div>
+    ${wl?`<div class="plant-watering water-${ws}">💧 ${wl}</div>`:''}
+  </div>`;
+}
+
+function renderPlants(filter = currentFilter, search = '') {
+  let plants = allPlants;
+  if (filter !== 'all') plants = plants.filter(p => p.type === filter);
+  if (search) plants = plants.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  const list = document.getElementById('plantsList');
+  list.innerHTML = plants.length === 0
+    ? `<div class="empty-state"><div class="empty-icon">🌱</div><p>Aucune plante trouvée.<br>Appuie sur + pour en ajouter !</p></div>`
+    : plants.map(p => renderPlantItem(p)).join('');
+}
+function filterPlants(val) { renderPlants(currentFilter, val); }
+function filterByType(type, el) {
+  currentFilter = type;
+  document.querySelectorAll('#filterTabs .tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderPlants(type, document.getElementById('searchInput').value);
+}
+
+// ══════════════════════════════════════════
+// PLANNING
+// ══════════════════════════════════════════
+function renderPlanning() {
+  const container = document.getElementById('planningContainer');
+  const today = new Date(); today.setHours(0,0,0,0);
+  let tasks = [...allTasks];
+
+  // Arrosages auto
+  allPlants.forEach(p => {
+    if (p.next_watering) {
+      tasks.push({ id:'auto_'+p.id, type:'arrosage', title:`Arroser ${p.name}`, due_date:p.next_watering, plant_id:p.id, done:false, source:'auto' });
+    }
+  });
+
+  // Tâches saisonnières auto depuis le calendrier horticole
+  allPlants.forEach(plant => {
+    const monthTasks = getTasksForPlantThisMonth(plant);
+    monthTasks.forEach((t, i) => {
+      const d = new Date();
+      tasks.push({ id:`seasonal_${plant.id}_${i}`, type:t.type, title:t.titre, due_date:d.toISOString().split('T')[0], plant_id:plant.id, done:false, source:'seasonal', desc:t.desc });
+    });
+  });
+
+  // Filtrer doublons saisonniers déjà en BDD
+  tasks = tasks.filter((t, idx, arr) => {
+    if (!t.source) return true;
+    if (t.source === 'seasonal') {
+      return !allTasks.some(dbT => dbT.plant_id === t.plant_id && dbT.title === t.title && dbT.due_date === t.due_date);
+    }
+    return true;
+  });
+
+  // Filtre par période
+  if (currentPlanningTab === 'week') {
+    const end = new Date(today); end.setDate(end.getDate() + 7);
+    tasks = tasks.filter(t => { const d = new Date(t.due_date); d.setHours(0,0,0,0); return d >= today && d <= end; });
+  } else if (currentPlanningTab === 'month') {
+    const end = new Date(today); end.setDate(end.getDate() + 30);
+    tasks = tasks.filter(t => { const d = new Date(t.due_date); d.setHours(0,0,0,0); return d >= today && d <= end; });
+  }
+
+  if (tasks.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><p>Aucune tâche prévue !<br>Tout est à jour 🎉</p></div>`;
+    return;
+  }
+
+  const grouped = {};
+  tasks.forEach(t => { if(!grouped[t.due_date]) grouped[t.due_date]=[]; grouped[t.due_date].push(t); });
+  const typeIcons = { arrosage:'💧', taille:'✂️', rempotage:'🪴', semis:'🌱', recolte:'🥕', traitement:'🧪', fertilisation:'🌿', autre:'📝' };
+
+  container.innerHTML = Object.keys(grouped).sort().map(date => {
+    const d = new Date(date + 'T00:00:00');
+    return `<div class="planning-day">
+      <div class="planning-day-title">${formatDateLabel(d)}</div>
+      ${grouped[date].map(t => {
+        const plant = allPlants.find(p => p.id === t.plant_id);
+        const sourceLabel = t.source === 'auto' ? '<span class="task-source task-auto">Auto</span>' : t.source === 'seasonal' ? '<span class="task-source task-seasonal">Calendrier</span>' : '<span class="task-source task-manual">Manuel</span>';
+        return `<div class="task-item">
+          <div class="task-check ${t.done?'done':''}" onclick="toggleTask('${t.id}',this,'${t.source||''}')">
+            ${t.done?'<span style="color:white;font-size:14px">✓</span>':''}
+          </div>
+          <div class="task-info">
+            <div class="task-title" style="${t.done?'text-decoration:line-through;opacity:0.5':''}">${t.title} ${sourceLabel}</div>
+            ${plant?`<div class="task-plant">${HORTICAL[plant.species]?.emoji||getTypeEmoji(plant.type)} ${plant.name}</div>`:''}
+            ${t.desc?`<div style="font-size:12px;color:var(--text-light);margin-top:2px">${t.desc}</div>`:''}
+          </div>
+          <div class="task-icon">${typeIcons[t.type]||'📝'}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function formatDateLabel(d) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const tom = new Date(today); tom.setDate(tom.getDate()+1);
+  if (d.getTime()===today.getTime()) return "Aujourd'hui";
+  if (d.getTime()===tom.getTime()) return 'Demain';
+  return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+}
+
+function showPlanningTab(tab, el) {
+  currentPlanningTab = tab;
+  document.querySelectorAll('.tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderPlanning();
+}
+
+async function toggleTask(id, el, source) {
+  if (source === 'auto') {
+    const plantId = id.replace('auto_','');
+    const plant = allPlants.find(p => p.id === plantId);
+    if (!plant) return;
+    const today = new Date().toISOString().split('T')[0];
+    const freq = getArrosageRecommande(plant);
+    const next = new Date(); next.setDate(next.getDate() + freq);
+    await db.from('plants').update({ last_watered:today, next_watering:next.toISOString().split('T')[0] }).eq('id', plantId);
+    el.classList.add('done'); el.innerHTML = '<span style="color:white;font-size:14px">✓</span>';
+    el.closest('.task-item').querySelector('.task-title').style.cssText = 'text-decoration:line-through;opacity:0.5';
+    showToast('💧 Arrosage enregistré !');
+    await loadAll(); return;
+  }
+  if (source === 'seasonal') {
+    // On l'ajoute en BDD et on le marque done
+    const taskData = { type:'autre', title:'Tâche saisonnière effectuée', due_date:new Date().toISOString().split('T')[0], done:true };
+    await db.from('tasks').insert([taskData]);
+    el.classList.add('done'); el.innerHTML = '<span style="color:white;font-size:14px">✓</span>';
+    showToast('✅ Tâche effectuée !');
+    return;
+  }
+  const task = allTasks.find(t => t.id === id);
+  if (!task) return;
+  await db.from('tasks').update({ done:!task.done }).eq('id', id);
+  task.done = !task.done;
+  el.classList.toggle('done', task.done);
+  el.innerHTML = task.done ? '<span style="color:white;font-size:14px">✓</span>' : '';
+  el.closest('.task-item').querySelector('.task-title').style.cssText = task.done ? 'text-decoration:line-through;opacity:0.5' : '';
+  showToast(task.done ? '✅ Tâche terminée !' : 'Tâche réouverte');
+}
+
+// ══════════════════════════════════════════
+// JOURNAL
+// ══════════════════════════════════════════
+function renderJournal() {
+  const container = document.getElementById('journalContainer');
+  if (allJournal.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📖</div><p>Ton journal est vide.<br>Note tes observations, prends des photos !</p></div>`;
+    return;
+  }
+  container.innerHTML = allJournal.map(entry => {
+    const plant = allPlants.find(p => p.id === entry.plant_id);
+    const d = new Date(entry.created_at);
+    const dateStr = d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+    const photoHtml = entry.photo_url
+      ? `<div class="journal-photo"><img src="${entry.photo_url}" alt=""></div>`
+      : `<div class="journal-photo" style="background:linear-gradient(135deg,var(--green-mist),var(--green-pale))">🌿</div>`;
+    return `<div class="journal-entry">
+      ${photoHtml}
+      <div class="journal-content">
+        <div class="journal-date">${dateStr}</div>
+        <div class="journal-title">${entry.title}</div>
+        ${entry.content?`<div class="journal-text">${entry.content}</div>`:''}
+        ${plant?`<div class="journal-plant">${HORTICAL[plant.species]?.emoji||getTypeEmoji(plant.type)} ${plant.name}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// DETAIL PLANTE
+// ══════════════════════════════════════════
+function openPlantDetail(plantId) {
+  const plant = allPlants.find(p => p.id === plantId);
+  if (!plant) return;
+  currentPlantId = plantId;
+  const zone = allZones.find(z => z.id === plant.zone_id);
+  const spec = HORTICAL[plant.species];
+
+  if (plant.photo_url) {
+    document.getElementById('detailHeader').innerHTML = `<img src="${plant.photo_url}" style="width:100%;height:100%;object-fit:cover"><button class="detail-back" onclick="closeModal('modalDetail')">←</button>`;
+  } else {
+    document.getElementById('detailHeader').innerHTML = `<div class="detail-header-emoji">${spec?.emoji||getTypeEmoji(plant.type)}</div><button class="detail-back" onclick="closeModal('modalDetail')">←</button>`;
+  }
+
+  document.getElementById('detailName').textContent = plant.name;
+  document.getElementById('detailLatin').textContent = plant.latin_name || (spec ? spec.nom : '');
+  document.getElementById('detailType').textContent = getTypeLabel(plant.type);
+  document.getElementById('detailType').className = `type-badge type-${plant.type}`;
+
+  const wl = getWaterLabel(plant);
+  const freq = getArrosageRecommande(plant);
+  document.getElementById('detailGrid').innerHTML = `
+    <div class="detail-stat"><div class="ds-icon">💧</div><div class="ds-label">Prochain arrosage</div><div class="ds-value">${wl||'—'}</div></div>
+    <div class="detail-stat"><div class="ds-icon">📅</div><div class="ds-label">Fréquence</div><div class="ds-value">${freq} jours</div></div>
+    <div class="detail-stat"><div class="ds-icon">📍</div><div class="ds-label">Zone</div><div class="ds-value">${zone?zone.icon+' '+zone.name:'—'}</div></div>
+    <div class="detail-stat"><div class="ds-icon">🗓️</div><div class="ds-label">Plantée le</div><div class="ds-value">${plant.planted_at?new Date(plant.planted_at).toLocaleDateString('fr-FR'):'—'}</div></div>`;
+  document.getElementById('detailNotes').textContent = plant.notes || '';
+
+  // Conseils spécifiques
+  const monthTasks = getTasksForPlantThisMonth(plant);
+  const adviceDiv = document.getElementById('detailAdvice');
+  if (monthTasks.length > 0) {
+    const icons = { taille:'✂️', arrosage:'💧', fertilisation:'🌿', recolte:'🥕', semis:'🌱', rempotage:'🪴', traitement:'🧪', autre:'📝' };
+    adviceDiv.innerHTML = `<div style="background:var(--green-mist);border-radius:var(--radius-sm);padding:14px">
+      <div style="font-weight:700;font-size:14px;margin-bottom:8px;color:var(--green-mid)">📋 À faire ce mois-ci</div>
+      ${monthTasks.map(t=>`<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;font-size:13px"><span>${icons[t.type]||'📝'}</span><div><strong>${t.titre}</strong><br><span style="color:var(--text-light)">${t.desc}</span></div></div>`).join('')}
+    </div>`;
+  } else {
+    adviceDiv.innerHTML = '';
+  }
+
+  document.getElementById('detailWaterBtn').onclick = () => waterPlant(plantId);
+
+  const history = allJournal.filter(j => j.plant_id === plantId);
+  document.getElementById('detailHistory').innerHTML = history.length === 0
+    ? '<div style="font-size:13px;color:var(--text-light)">Aucune entrée journal.</div>'
+    : history.map(e=>`<div style="padding:10px 0;border-bottom:1px solid var(--green-mist)">
+        <div style="font-size:11px;color:var(--text-light);font-weight:600">${new Date(e.created_at).toLocaleDateString('fr-FR')}</div>
+        <div style="font-size:14px;font-weight:500;margin-top:2px">${e.title}</div>
+        ${e.content?`<div style="font-size:13px;color:var(--text-mid);margin-top:2px">${e.content}</div>`:''}
+        ${e.photo_url?`<img src="${e.photo_url}" style="width:100%;border-radius:10px;margin-top:8px;max-height:160px;object-fit:cover">`:''}
+      </div>`).join('');
+
+  openModal('modalDetail');
+}
+
+async function waterPlant(plantId) {
+  const plant = allPlants.find(p => p.id === plantId);
+  if (!plant) return;
+  const today = new Date().toISOString().split('T')[0];
+  const freq = getArrosageRecommande(plant);
+  const next = new Date(); next.setDate(next.getDate() + freq);
+  await db.from('plants').update({ last_watered:today, next_watering:next.toISOString().split('T')[0] }).eq('id', plantId);
+  showToast('💧 Arrosage enregistré !');
+  await loadAll();
+  closeModal('modalDetail');
+}
+
+function addJournalForPlant() {
+  closeModal('modalDetail');
+  setTimeout(() => { showPage('journal', document.querySelectorAll('.nav-btn')[3]); openAddJournalModal(currentPlantId); }, 300);
+}
+
+// ══════════════════════════════════════════
+// SAVE
+// ══════════════════════════════════════════
+async function savePlant() {
+  const name = document.getElementById('plantName').value.trim();
+  if (!name) { showToast('⚠️ Le nom est obligatoire'); return; }
+  const species = document.getElementById('plantSpecies').value || 'autre';
+  const type = document.getElementById('plantType').value;
+  const zoneId = document.getElementById('plantZone').value || null;
+  const latin = document.getElementById('plantLatin')?.value.trim() || '';
+  const spec = HORTICAL[species];
+  const season = getCurrentSeason();
+  const defaultWatering = spec ? spec.arrosage[season] : 7;
+  const watering = parseInt(document.getElementById('plantWatering').value) || defaultWatering;
+  const lastWatered = document.getElementById('plantLastWatered').value || null;
+  const planted = document.getElementById('plantDate').value || null;
+  const notes = document.getElementById('plantNotes').value.trim();
+
+  let nextWatering = null;
+  if (lastWatered && watering) {
+    const d = new Date(lastWatered); d.setDate(d.getDate() + watering);
+    nextWatering = d.toISOString().split('T')[0];
+  }
+
+  let photoUrl = null;
+  if (plantPhotoBase64) photoUrl = await uploadPhoto(plantPhotoBase64, 'plants', name);
+
+  const { error } = await db.from('plants').insert([{
+    name, latin_name: latin||null, type, zone_id:zoneId, species,
+    watering_frequency_days:watering, last_watered:lastWatered, next_watering:nextWatering,
+    planted_at:planted, notes:notes||null, photo_url:photoUrl
+  }]);
+
+  if (error) {
+    // Si colonne species manquante, réessayer sans
+    if (error.message && error.message.includes('species')) {
+      const { error: e2 } = await db.from('plants').insert([{
+        name, latin_name:latin||null, type, zone_id:zoneId,
+        watering_frequency_days:watering, last_watered:lastWatered, next_watering:nextWatering,
+        planted_at:planted, notes:notes||null, photo_url:photoUrl
+      }]);
+      if (e2) { showToast('❌ Erreur: ' + e2.message); return; }
+    } else { showToast('❌ Erreur: ' + error.message); return; }
+  }
+  showToast('✅ ' + name + ' ajouté !');
+  closeModal('modalPlante');
+  resetPlantForm();
+  await loadAll();
+}
+
+async function saveZone() {
+  const name = document.getElementById('zoneName').value.trim();
+  if (!name) { showToast('⚠️ Le nom est obligatoire'); return; }
+  const { error } = await db.from('zones').insert([{ name, type:document.getElementById('zoneType').value, icon:document.getElementById('zoneIcon').value }]);
+  if (error) { showToast('❌ Erreur: ' + error.message); return; }
+  showToast('✅ Zone créée !');
+  closeModal('modalZone');
+  document.getElementById('zoneName').value = '';
+  await loadAll();
+}
+
+async function saveTask() {
+  const dueDate = document.getElementById('taskDate').value;
+  if (!dueDate) { showToast('⚠️ La date est obligatoire'); return; }
+  const type = document.getElementById('taskType').value;
+  const title = document.getElementById('taskTitle').value.trim() || ({arrosage:'Arrosage',taille:'Taille',rempotage:'Rempotage',semis:'Semis',recolte:'Récolte',traitement:'Traitement',fertilisation:'Fertilisation',autre:'Tâche'}[type]);
+  const { error } = await db.from('tasks').insert([{ type, title, plant_id:document.getElementById('taskPlant').value||null, due_date:dueDate, notes:document.getElementById('taskNotes').value.trim()||null }]);
+  if (error) { showToast('❌ Erreur: ' + error.message); return; }
+  showToast('✅ Tâche ajoutée !');
+  closeModal('modalTask');
+  await loadAll();
+}
+
+async function saveJournalEntry() {
+  const title = document.getElementById('journalTitle').value.trim();
+  if (!title) { showToast('⚠️ Le titre est obligatoire'); return; }
+  let photoUrl = null;
+  if (journalPhotoBase64) photoUrl = await uploadPhoto(journalPhotoBase64, 'journal', title);
+  const { error } = await db.from('journal_entries').insert([{ title, plant_id:document.getElementById('journalPlant').value||null, content:document.getElementById('journalContent').value.trim()||null, photo_url:photoUrl }]);
+  if (error) { showToast('❌ Erreur: ' + error.message); return; }
+  showToast('✅ Entrée ajoutée !');
+  closeModal('modalJournal');
+  document.getElementById('journalTitle').value = '';
+  document.getElementById('journalContent').value = '';
+  journalPhotoBase64 = null;
+  document.getElementById('journalPhotoUpload').innerHTML = `<span style="font-size:30px">📷</span><span style="font-size:13px;color:var(--text-light);font-weight:500">Prendre une photo</span><input type="file" id="journalPhotoFile" accept="image/*" capture="environment" onchange="handleJournalPhoto(this)">`;
+  await loadAll();
+}
+
+// ══════════════════════════════════════════
+// UPLOAD PHOTO
+// ══════════════════════════════════════════
+async function uploadPhoto(base64, bucket, name) {
+  try {
+    const raw = base64.includes(',') ? base64.split(',')[1] : base64;
+    const bytes = atob(raw), ab = new ArrayBuffer(bytes.length), ia = new Uint8Array(ab);
+    for(let i=0;i<bytes.length;i++) ia[i]=bytes.charCodeAt(i);
+    const blob = new Blob([ab],{type:'image/jpeg'});
+    const filename = `${bucket}/${Date.now()}_${name.replace(/\s+/g,'_')}.jpg`;
+    const {error} = await db.storage.from('green-home-photos').upload(filename, blob, {contentType:'image/jpeg',upsert:true});
+    if(error) return null;
+    const {data} = db.storage.from('green-home-photos').getPublicUrl(filename);
+    return data.publicUrl;
+  } catch(e) { return null; }
+}
+
+async function recognizePlant() {
+  if (!plantPhotoBase64) { showToast("⚠️ Prends d'abord une photo !"); return; }
+  const btn = document.getElementById('recognizeBtn');
+  const status = document.getElementById('recognizeStatus');
+  btn.innerHTML = '<span style="font-size:18px">⏳</span> Analyse en cours…';
+  btn.disabled = true;
+  status.textContent = "L'IA identifie ta plante, patiente 5 secondes…";
+
+  const base64 = plantPhotoBase64.includes(',') ? plantPhotoBase64.split(',')[1] : plantPhotoBase64;
+  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const month = months[new Date().getMonth()];
+
+  try {
+    const response = await fetch('/.netlify/functions/identify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_base64: base64, month })
+    });
+
+    if (!response.ok) throw new Error('Erreur serveur: ' + response.status);
+    const result = await response.json();
+    if (result.error) throw new Error(result.error);
+
+    // Remplir le formulaire automatiquement
+    if (result.nom) document.getElementById('plantName').value = result.nom;
+    if (result.nom_latin) { const el = document.getElementById('plantLatin'); if(el) el.value = result.nom_latin; }
+    if (result.type) document.getElementById('plantType').value = result.type;
+    if (result.espece) document.getElementById('plantSpecies').value = result.espece;
+    if (result.arrosage_jours) document.getElementById('plantWatering').value = result.arrosage_jours;
+    if (result.notes) document.getElementById('plantNotes').value = result.notes;
+
+    btn.innerHTML = '<span style="font-size:18px">✅</span> Plante identifiée !';
+    btn.style.background = 'linear-gradient(135deg,#2d5a27,#4a9e3f)';
+    status.textContent = '✨ ' + result.nom + ' — vérifie et complète si besoin';
+    showToast('🌱 ' + result.nom + ' identifié !');
+
+  } catch(e) {
+    btn.innerHTML = '<span style="font-size:18px">🔍</span> Réessayer';
+    btn.disabled = false;
+    status.textContent = '⚠️ Échec — ' + e.message;
+    showToast('⚠️ Identification échouée');
+  }
+}
+
+
+function handlePlantPhoto(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    plantPhotoBase64 = e.target.result;
+    const uploadEl = document.getElementById('plantPhotoUpload');
+    if (uploadEl) {
+      uploadEl.innerHTML = `<img src="${e.target.result}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px"><input type="file" id="plantPhotoFile" accept="image/*" capture="environment" onchange="handlePlantPhoto(this)" style="display:none">`;
+    }
+    setTimeout(() => {
+      const btnWrapper = document.getElementById('iaRecognizeBtn');
+      if (btnWrapper) {
+        btnWrapper.style.cssText = 'display:block !important;margin-bottom:16px';
+        const rb = document.getElementById('recognizeBtn');
+        if (rb) {
+          rb.innerHTML = '<span style="font-size:18px">🔍</span> Identifier la plante automatiquement';
+          rb.disabled = false;
+          rb.style.background = 'linear-gradient(135deg,#7c3aed,#4f46e5)';
+        }
+        const rs = document.getElementById('recognizeStatus');
+        if (rs) rs.textContent = '📸 Photo prête — appuie pour identifier !';
+      }
+    }, 150);
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleJournalPhoto(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    journalPhotoBase64 = e.target.result;
+    document.getElementById('journalPhotoUpload').innerHTML = `<img src="${e.target.result}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><input type="file" id="journalPhotoFile" accept="image/*" capture="environment" onchange="handleJournalPhoto(this)" style="display:none">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetPlantForm() {
+  ['plantName','plantNotes','plantWatering'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('plantSpecies').value='';
+  plantPhotoBase64=null;
+  document.getElementById('plantPhotoUpload').innerHTML=`<span style="font-size:30px">📷</span><span style="font-size:13px;color:var(--text-light);font-weight:500">Prendre une photo</span><input type="file" id="plantPhotoFile" accept="image/*" capture="environment" onchange="handlePlantPhoto(this)">`;
+}
+
+// ══════════════════════════════════════════
+// SELECTS & UI
+// ══════════════════════════════════════════
+function populateSelects() {
+  const zoneOpts = allZones.map(z=>`<option value="${z.id}">${z.icon} ${z.name}</option>`).join('');
+  const zoneEl = document.getElementById('plantZone');
+  if(zoneEl) zoneEl.innerHTML=`<option value="">Choisir…</option>`+zoneOpts;
+  const plantOpts = allPlants.map(p=>`<option value="${p.id}">${HORTICAL[p.species]?.emoji||getTypeEmoji(p.type)} ${p.name}</option>`).join('');
+  ['taskPlant','journalPlant'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=`<option value="">Toutes</option>`+plantOpts;});
+  const iaEl=document.getElementById('iaPlantSelect');
+  if(iaEl) iaEl.innerHTML=`<option value="">Question générale</option>`+plantOpts;
+}
+
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('fab').style.display = name==='ia'?'none':'flex';
+}
+
+function openAddModal() {
+  const id = document.querySelector('.page.active').id;
+  if(id==='page-planning') openAddTaskModal();
+  else if(id==='page-journal') openAddJournalModal();
+  else if(id==='page-carte') openAddZoneModal();
+  else openAddPlantModal();
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function openAddPlantModal() { populateSelects(); openModal('modalPlante'); }
+function openAddZoneModal() { openModal('modalZone'); }
+function openAddTaskModal() { populateSelects(); const t=new Date().toISOString().split('T')[0]; document.getElementById('taskDate').value=t; openModal('modalTask'); }
+function openAddJournalModal(plantId) { populateSelects(); if(plantId) document.getElementById('journalPlant').value=plantId; openModal('modalJournal'); }
+
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{ if(e.target===o&&o.id!=='modalDetail') closeModal(o.id); });
+});
+
+function selectIcon(el, icon) {
+  document.querySelectorAll('.icon-opt').forEach(e=>e.style.background='var(--green-mist)');
+  el.style.background='var(--green-pale)';
+  document.getElementById('zoneIcon').value=icon;
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ══════════════════════════════════════════
+// START
+// ══════════════════════════════════════════
+init();
+</script>
+</body>
+</html>

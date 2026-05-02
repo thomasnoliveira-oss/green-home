@@ -1560,7 +1560,23 @@ async function recognizePlant() {
   btn.disabled = true;
   status.textContent = "L'IA identifie ta plante, patiente 5 secondes…";
 
-  const base64 = plantPhotoBase64.includes(',') ? plantPhotoBase64.split(',')[1] : plantPhotoBase64;
+  // Compresser l'image avant envoi (max 800px, qualité 70%)
+  const base64 = await new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const max = 800;
+      let w = img.width, h = img.height;
+      if (w > max || h > max) {
+        if (w > h) { h = Math.round(h * max / w); w = max; }
+        else { w = Math.round(w * max / h); h = max; }
+      }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.7).split(',')[1]);
+    };
+    img.src = plantPhotoBase64.startsWith('data:') ? plantPhotoBase64 : 'data:image/jpeg;base64,' + plantPhotoBase64;
+  });
   const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
   const month = months[new Date().getMonth()];
 
